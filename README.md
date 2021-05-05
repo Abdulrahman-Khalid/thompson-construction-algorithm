@@ -15,12 +15,6 @@ $ python main.py --regex 'regex_expression' --graph filename
 # Example
 ```$ python main.py --regex '(ab)*|b+' --graph mygraph```
 
-<center>
-
-![Output Graph](graphs/graph.png)
-
-</center>
-
 <p align="center">
   <img src="graphs/graph.png" alt="Output Graph"/>
 </p>
