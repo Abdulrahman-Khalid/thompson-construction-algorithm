@@ -1,21 +1,32 @@
 from tokenizer import Tokenizer
-from pares_tree import ParseTree
+from parse_tree import ParseTree
 from graph import build_graph, Graph
-input_regex = "(a)"
+import argparse
 
-tokenizer = Tokenizer(input_regex)
+parser = argparse.ArgumentParser()
+parser.add_argument('--regex', type=str, required=True, default='', 
+                                help='input regex string => valid symbols: ' \
+                                '\'AB\' AND operation, ' \
+                                '\'A|B\' OR operation, ' \
+                                '\'A*\' Repetition (0 or more), ' \
+                                '\'A+\' Repetition (1 or more), ' \
+                                '() are supported for subregex expressions, ' \
+                                '[] are supported for range expressions, ' \
+                                'example: \'(ab)*|c+\'')
+args = parser.parse_args()
+
+# Tokenization
+tokenizer = Tokenizer(args.regex)
 tokens, valid = tokenizer.tokenize()
+
 if not valid:
     print("Invalid Regex")
 else:
-    #for token in tokens:
-    #    print(token)
-
+    # Construct Parse tree
     tree = ParseTree()
     tree.build_tree(tokens)
+
+    # Construct NFA Graph
     graph = build_graph(tree.root)
     g = graph.initial_state.draw_graph()
     g.view()
-
-    #print(graph.initial_state.map)
-    #print(graph.initial_state.map[0]['#'])

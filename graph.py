@@ -1,4 +1,4 @@
-from pares_tree import ParseTree, NodeType
+from parse_tree import ParseTree, NodeType
 from tokenizer import TokenType
 from graphviz import Digraph
 import json
@@ -59,8 +59,9 @@ class State:
                 self.json_add_keyvalue(data, output, key)
                 if len(output[key].map) == 0:
                     graph.attr('node', shape='doublecircle')
-                    graph.edge(chr(self.value), chr(output[key].value), label=key)
+                    graph.node(chr(output[key].value))
                     graph.attr('node', shape='circle')
+                    graph.edge(chr(self.value), chr(output[key].value), label=key)
                 else:
                     graph.edge(chr(self.value), chr(output[key].value), label=key)
                 if output[key].value not in State.previously_printed:
