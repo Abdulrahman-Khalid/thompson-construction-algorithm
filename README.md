@@ -13,7 +13,7 @@ $ python main.py --regex 'regex_expression'
 $ python main.py --regex 'regex_expression' --graph filename
 ```
 # Example
-```$ python ./main --regex '(ab)*|b+' --graph mygraph```
+```$ python main.py --regex '(ab)*|b+' --graph mygraph```
 
 <center>
   
