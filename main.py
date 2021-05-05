@@ -22,7 +22,7 @@ tokenizer = Tokenizer(args.regex)
 tokens, valid = tokenizer.tokenize()
 
 if not valid:
-    print("Invalid Regex")
+    print("Invalid Regex Expression")
 else:
     # Construct Parse tree
     tree = ParseTree()
