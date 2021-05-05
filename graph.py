@@ -25,7 +25,7 @@ class State:
             
         return s
 
-    def draw_graph(self, filename='test.gv'):
+    def draw_graph(self, filename):
         State.previously_printed = []
         graph = Digraph('G', filename=filename)
         graph.attr(rankdir='LR', size='6,5')
