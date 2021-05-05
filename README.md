@@ -20,11 +20,11 @@ $ python main.py --regex 'regex_expression' --graph filename
 </p>
 
 
-<p align="center">
+<center>
   
 | Name                                |    Section      |    BN      |              Email               |
 | ----------------------------------- | :-------------: | :--------: | :------------------------------: |
 | Ahmad Mahmoud AbdElMen'em           |       1         |    5       | ahmed.afifi.cufe@gmail.com       |
 | Abdulrahman Khalid Hassan           |       1         |    30      | abdulrahman.elshafei98@gmail.com|
 
-</p>
+</center>
