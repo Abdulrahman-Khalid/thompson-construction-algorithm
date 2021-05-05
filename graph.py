@@ -136,7 +136,6 @@ def create_plus_graph(initial_graph):
     return asterisk_graph
 
 
-# Post order traversal
 def build_graph(parse_tree):
     if parse_tree.type == NodeType.Subtree:
         return build_graph(parse_tree.value)
