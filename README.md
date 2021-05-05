@@ -19,7 +19,6 @@ $ python main.py --regex 'regex_expression' --graph filename
   <img src="graphs/graph.png" alt="Output Graph"/>
 </p>
 
-
 <center>
   
 | Name                                |    Section      |    BN      |              Email               |
