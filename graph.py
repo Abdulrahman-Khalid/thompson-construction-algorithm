@@ -1,6 +1,7 @@
 from pares_tree import ParseTree, NodeType
 from tokenizer import TokenType
 from graphviz import Digraph
+import json
 
 class State:
     previously_printed = []
@@ -29,13 +30,33 @@ class State:
         graph = Digraph('G', filename=filename)
         graph.attr(rankdir='LR', size='6,5')
         graph.attr('node', shape='circle')
-        self.draw_graph_helper(graph)
+        data = {}
+        data["startingState"] = chr(self.value)
+        self.draw_graph_helper(graph, data)
+        with open(filename+'.json', 'w') as outfile:
+            json.dump(data, outfile, indent=4)
         return graph
 
-    def draw_graph_helper(self, graph):
+    def json_add_keyvalue(self, data, output, key):
+        state = chr(output[key].value)
+        if state not in data:
+            data[state] = {}
+        if key == "\u03b5":
+            key = "Epsilon"
+        if key not in data[state]:
+            data[state][key] = list(chr(self.value))
+        else:
+            data[state][key].append(chr(self.value))
+
+    def draw_graph_helper(self, graph, data):
         State.previously_printed.append(self.value)
+        if chr(self.value) not in data:
+            data[chr(self.value)] = {}
+        data[chr(self.value)]["isTerminatingState"] = len(self.map) == 0
+            
         for output in self.map:
             for key in output:
+                self.json_add_keyvalue(data, output, key)
                 if len(output[key].map) == 0:
                     graph.attr('node', shape='doublecircle')
                     graph.edge(chr(self.value), chr(output[key].value), label=key)
@@ -44,9 +65,9 @@ class State:
                     graph.edge(chr(self.value), chr(output[key].value), label=key)
                 if output[key].value not in State.previously_printed:
                     State.previously_printed.append(output[key].value) 
-                    output[key].draw_graph_helper(graph)
+                    output[key].draw_graph_helper(graph, data)
 
-        
+
 class Graph:
     last_state_value = 65
     def __init__(self):
