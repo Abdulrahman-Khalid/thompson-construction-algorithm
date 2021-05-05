@@ -14,6 +14,10 @@ else:
     tree = ParseTree()
     tree.build_tree(tokens)
     graph = build_graph(tree.root)
+
     print(graph.initial_state)
+    g = graph.initial_state.draw_graph()
+    g.view()
+
     #print(graph.initial_state.map)
     #print(graph.initial_state.map[0]['#'])

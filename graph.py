@@ -1,5 +1,6 @@
 from pares_tree import ParseTree, NodeType
 from tokenizer import TokenType
+from graphviz import Digraph
 
 class State:
     previously_printed = []
@@ -24,7 +25,28 @@ class State:
                 else:
                     s += "\t" * level + key + " --> " + "None" + "\n" 
         return s
-   
+
+    def draw_graph(self, filename='test.gv'):
+        State.previously_printed = []
+        graph = Digraph('G', filename=filename)
+        graph.attr(rankdir='LR', size='6,5')
+        graph.attr('node', shape='circle')
+        self.draw_graph_helper(graph)
+        return graph
+
+    def draw_graph_helper(self, graph):
+        State.previously_printed.append(self.value)
+        for output in self.map:
+            for key in output:
+                if output[key] is not None:
+                    if output[key].value in State.previously_printed:
+                        graph.edge(chr(self.value), chr(output[key].value), label=key)
+                    else:
+                        graph.edge(chr(self.value), chr(output[key].value), label=key)
+                        output[key].draw_graph_helper(graph)
+                        State.previously_printed.append(output[key].value) 
+                else:
+                    graph.edge(self.value, "None", label=key)
 
 
 class Graph:
