@@ -45,8 +45,6 @@ class Tokenizer:
             self._is_right_parenthesis(self.regex_string[-1]):
             self.regex_string = self.regex_string[1:-1]
 
-        print(self.regex_string)
-
 
     def _validate_regex_string(self):
         if not self.regex_string:

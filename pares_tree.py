@@ -6,7 +6,7 @@ class NodeType(Enum):
     Token = auto()
     Subtree = auto()
 
-class Node:
+class TreeNode:
     def __init__(self, value, node_type=NodeType.Token):
         self.left = None
         self.right = None
@@ -30,7 +30,7 @@ class Node:
 
 class ParseTree:
     def __init__(self):
-        self.root = Node(None)
+        self.root = TreeNode(None)
 
     def _fill_empty_node(self, node, new_node):
         if node.left is None:
@@ -45,7 +45,7 @@ class ParseTree:
             self._fill_empty_node(node.right, new_node)
 
     def _insert_literal(self, value):
-        new_node = Node(value)
+        new_node = TreeNode(value)
         self._fill_empty_node(self.root, new_node)
 
     def _right_rotate(self, node):
@@ -57,7 +57,7 @@ class ParseTree:
 
     def _insert_two_operand_operator(self, value):
         if self.root.value is not None:
-            new_node = Node(value)
+            new_node = TreeNode(value)
             new_node.left = self.root
             self.root = new_node
             if value.value == '&' and \
@@ -70,7 +70,7 @@ class ParseTree:
 
 
     def _insert_subtree(self, root):
-        new_node = Node(root, NodeType.Subtree)
+        new_node = TreeNode(root, NodeType.Subtree)
         self._fill_empty_node(self.root, new_node)
 
     def _insert_single_operand_operator(self, value):
