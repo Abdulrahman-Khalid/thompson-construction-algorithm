@@ -38,15 +38,18 @@ class State:
         return graph
 
     def json_add_keyvalue(self, data, output, key):
-        state = chr(output[key].value)
+        state = chr(self.value)
         if state not in data:
             data[state] = {}
         if key == "\u03b5":
-            key = "Epsilon"
-        if key not in data[state]:
-            data[state][key] = list(chr(self.value))
+            newKey = "Epsilon"
         else:
-            data[state][key].append(chr(self.value))
+            newKey = key
+        outState = chr(output[key].value)
+        if newKey not in data[state]:
+            data[state][newKey] = list(outState)
+        else:
+            data[state][newKey].append(outState)
 
     def draw_graph_helper(self, graph, data):
         State.previously_printed.append(self.value)
