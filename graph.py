@@ -16,14 +16,12 @@ class State:
         State.previously_printed.append(self.value)
         for output in self.map:
             for key in output:
-                if output[key] is not None:
-                    if output[key].value in State.previously_printed:
-                        s += "\t" * level + key + " --> " + "\n" + "\t" * (level+1) + "State " + chr(output[key].value) + "\n"
-                    else:
-                        s += "\t" * level + key + " --> " + "\n" + output[key].__str__(level + 1) + "\n"
-                        State.previously_printed.append(output[key].value) 
+                if output[key].value in State.previously_printed:
+                    s += "\t" * level + key + " --> " + "\n" + "\t" * (level+1) + "State " + chr(output[key].value) + "\n"
                 else:
-                    s += "\t" * level + key + " --> " + "None" + "\n" 
+                    s += "\t" * level + key + " --> " + "\n" + output[key].__str__(level + 1) + "\n"
+                    State.previously_printed.append(output[key].value) 
+            
         return s
 
     def draw_graph(self, filename='test.gv'):
@@ -38,17 +36,17 @@ class State:
         State.previously_printed.append(self.value)
         for output in self.map:
             for key in output:
-                if output[key] is not None:
-                    if output[key].value in State.previously_printed:
-                        graph.edge(chr(self.value), chr(output[key].value), label=key)
-                    else:
-                        graph.edge(chr(self.value), chr(output[key].value), label=key)
-                        output[key].draw_graph_helper(graph)
-                        State.previously_printed.append(output[key].value) 
+                if len(output[key].map) == 0:
+                    graph.attr('node', shape='doublecircle')
+                    graph.edge(chr(self.value), chr(output[key].value), label=key)
+                    graph.attr('node', shape='circle')
                 else:
-                    graph.edge(self.value, "None", label=key)
+                    graph.edge(chr(self.value), chr(output[key].value), label=key)
+                if output[key].value not in State.previously_printed:
+                    State.previously_printed.append(output[key].value) 
+                    output[key].draw_graph_helper(graph)
 
-
+        
 class Graph:
     last_state_value = 65
     def __init__(self):
@@ -66,7 +64,7 @@ def create_literal_graph(literal):
     return literal_graph
 
 def create_and_graph(fisrst_graph, second_graph):
-    fisrst_graph.last_state.add_output_edge("#", second_graph.initial_state)
+    fisrst_graph.last_state.add_output_edge("\u03B5", second_graph.initial_state)
     fisrst_graph.last_state = second_graph.last_state
     return fisrst_graph
 
@@ -77,11 +75,11 @@ def create_or_graph(fisrst_graph, second_graph):
     or_graph.last_state = State(Graph.last_state_value)
     Graph.last_state_value += 1
 
-    or_graph.initial_state.add_output_edge("#", fisrst_graph.initial_state)
-    or_graph.initial_state.add_output_edge("#", second_graph.initial_state)
+    or_graph.initial_state.add_output_edge("\u03B5", fisrst_graph.initial_state)
+    or_graph.initial_state.add_output_edge("\u03B5", second_graph.initial_state)
 
-    fisrst_graph.last_state.add_output_edge("#", or_graph.last_state)
-    second_graph.last_state.add_output_edge("#", or_graph.last_state)
+    fisrst_graph.last_state.add_output_edge("\u03B5", or_graph.last_state)
+    second_graph.last_state.add_output_edge("\u03B5", or_graph.last_state)
     return or_graph
 
 def create_asterisk_graph(initial_graph):
@@ -91,13 +89,13 @@ def create_asterisk_graph(initial_graph):
     asterisk_graph.last_state = State(Graph.last_state_value)
     Graph.last_state_value += 1
 
-    asterisk_graph.initial_state.add_output_edge("#", initial_graph.initial_state)
+    asterisk_graph.initial_state.add_output_edge("\u03B5", initial_graph.initial_state)
 
-    asterisk_graph.initial_state.add_output_edge("#", asterisk_graph.last_state)
+    asterisk_graph.initial_state.add_output_edge("\u03B5", asterisk_graph.last_state)
 
-    initial_graph.last_state.add_output_edge("#", asterisk_graph.last_state)
+    initial_graph.last_state.add_output_edge("\u03B5", asterisk_graph.last_state)
     
-    initial_graph.last_state.add_output_edge("#", asterisk_graph.initial_state)
+    initial_graph.last_state.add_output_edge("\u03B5", asterisk_graph.initial_state)
 
     return asterisk_graph
 
@@ -108,11 +106,11 @@ def create_plus_graph(initial_graph):
     asterisk_graph.last_state = State(Graph.last_state_value)
     Graph.last_state_value += 1
 
-    asterisk_graph.initial_state.add_output_edge("#", initial_graph.initial_state)
+    asterisk_graph.initial_state.add_output_edge("\u03B5", initial_graph.initial_state)
  
-    initial_graph.last_state.add_output_edge("#", asterisk_graph.last_state)
+    initial_graph.last_state.add_output_edge("\u03B5", asterisk_graph.last_state)
     
-    initial_graph.last_state.add_output_edge("#", asterisk_graph.initial_state)
+    initial_graph.last_state.add_output_edge("\u03B5", asterisk_graph.initial_state)
 
     return asterisk_graph
 

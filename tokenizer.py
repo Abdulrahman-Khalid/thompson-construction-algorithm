@@ -40,11 +40,6 @@ class Tokenizer:
                     idx -= 2
             idx += 1
 
-        if len(self.regex_string) > 1 and \
-            self._is_left_parenthesis(self.regex_string[0]) and \
-            self._is_right_parenthesis(self.regex_string[-1]):
-            self.regex_string = self.regex_string[1:-1]
-
 
     def _validate_regex_string(self):
         if not self.regex_string:

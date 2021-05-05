@@ -1,7 +1,7 @@
 from tokenizer import Tokenizer
 from pares_tree import ParseTree
 from graph import build_graph, Graph
-input_regex = "(ab|c)*"
+input_regex = "a*|bc"
 
 tokenizer = Tokenizer(input_regex)
 tokens, valid = tokenizer.tokenize()
@@ -15,7 +15,6 @@ else:
     tree.build_tree(tokens)
     graph = build_graph(tree.root)
 
-    print(graph.initial_state)
     g = graph.initial_state.draw_graph()
     g.view()
 
