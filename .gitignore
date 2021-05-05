@@ -4,3 +4,4 @@ __pycache__
 *.json
 graph
 *.png
+!graphs/*.png
