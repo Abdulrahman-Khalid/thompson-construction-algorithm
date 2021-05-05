@@ -158,5 +158,3 @@ def build_graph(parse_tree):
 
     if parse_tree.value.value == "+":
         return create_plus_graph(build_graph(parse_tree.left))
-
-    
