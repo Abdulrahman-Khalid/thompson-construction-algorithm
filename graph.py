@@ -27,7 +27,7 @@ class State:
 
     def draw_graph(self, filename):
         State.previously_printed = []
-        graph = Digraph('G', filename=filename)
+        graph = Digraph('G', filename=filename, format='png')
         graph.attr(rankdir='LR', size='6,5')
         graph.attr('node', shape='circle')
         data = {}

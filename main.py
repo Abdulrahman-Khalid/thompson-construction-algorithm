@@ -13,7 +13,7 @@ parser.add_argument('--regex', type=str, required=True, default='',
                                 '() are supported for subregex expressions, ' \
                                 '[] are supported for range expressions, ' \
                                 'example: \'(ab)*|c+\'')
-parser.add_argument('--graph', type=str, required=False, default='graph.gv', 
+parser.add_argument('--graph', type=str, required=False, default='graph', 
                                 help='graph filename')
 args = parser.parse_args()
 

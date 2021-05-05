@@ -2,3 +2,5 @@
 *.gv.pdf
 __pycache__
 *.json
+graph
+*.png
