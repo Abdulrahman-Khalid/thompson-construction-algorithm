@@ -13,12 +13,12 @@ class State:
         self.map.append({edge_value: output_state})
     
     def __str__(self, level=0):
-        s = "\t" * level + "State " + chr(self.value) + "\n"
+        s = "\t" * level + "State " + "S"+ str(self.value) + "\n"
         State.previously_printed.append(self.value)
         for output in self.map:
             for key in output:
                 if output[key].value in State.previously_printed:
-                    s += "\t" * level + key + " --> " + "\n" + "\t" * (level+1) + "State " + chr(output[key].value) + "\n"
+                    s += "\t" * level + key + " --> " + "\n" + "\t" * (level+1) + "State " + "S" + str(output[key].value) + "\n"
                 else:
                     s += "\t" * level + key + " --> " + "\n" + output[key].__str__(level + 1) + "\n"
                     State.previously_printed.append(output[key].value) 
@@ -38,14 +38,14 @@ class State:
         return graph
 
     def json_add_keyvalue(self, data, output, key):
-        state = chr(self.value)
+        state = "S" + str(self.value)
         if state not in data:
             data[state] = {}
         if key == "\u03b5":
             newKey = "Epsilon"
         else:
             newKey = key
-        outState = chr(output[key].value)
+        outState = "S" + str(output[key].value)
         if newKey not in data[state]:
             data[state][newKey] = list(outState)
         else:
@@ -53,27 +53,27 @@ class State:
 
     def draw_graph_helper(self, graph, data):
         State.previously_printed.append(self.value)
-        if chr(self.value) not in data:
-            data[chr(self.value)] = {}
-        data[chr(self.value)]["isTerminatingState"] = len(self.map) == 0
+        if "S" + str(self.value) not in data:
+            data["S" + str(self.value)] = {}
+        data["S" + str(self.value)]["isTerminatingState"] = len(self.map) == 0
             
         for output in self.map:
             for key in output:
                 self.json_add_keyvalue(data, output, key)
                 if len(output[key].map) == 0:
                     graph.attr('node', shape='doublecircle')
-                    graph.node(chr(output[key].value))
+                    graph.node("S" + str(output[key].value))
                     graph.attr('node', shape='circle')
-                    graph.edge(chr(self.value), chr(output[key].value), label=key)
+                    graph.edge("S" + str(self.value), "S" + str(output[key].value), label=key)
                 else:
-                    graph.edge(chr(self.value), chr(output[key].value), label=key)
+                    graph.edge("S" + str(self.value), "S" + str(output[key].value), label=key)
                 if output[key].value not in State.previously_printed:
                     State.previously_printed.append(output[key].value) 
                     output[key].draw_graph_helper(graph, data)
 
 
 class Graph:
-    last_state_value = 65
+    last_state_value = 0
     def __init__(self):
         self.initial_state = None
         self.last_state = None
