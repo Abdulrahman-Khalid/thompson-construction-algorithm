@@ -1,5 +1,7 @@
-# Supported Regex Expressions
-python ./main.py --help
+# Help
+```
+$ python main.py --help
+```
 
 # Input Regex Expression
 ```
