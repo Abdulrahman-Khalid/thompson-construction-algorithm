@@ -16,6 +16,12 @@ $ python main.py --regex 'regex_expression' --graph filename
 ```$ python main.py --regex '(ab)*|b+' --graph mygraph```
 
 <center>
+
+![Output Graph](graphs/graph.png)
+
+</center>
+
+<center>
   
 | Name                                |    Section      |    BN      |              Email               |
 | ----------------------------------- | :-------------: | :--------: | :------------------------------: |
