@@ -13,6 +13,8 @@ parser.add_argument('--regex', type=str, required=True, default='',
                                 '() are supported for subregex expressions, ' \
                                 '[] are supported for range expressions, ' \
                                 'example: \'(ab)*|c+\'')
+parser.add_argument('--graph', type=str, required=False, default='graph.gv', 
+                                help='graph filename')
 args = parser.parse_args()
 
 # Tokenization
@@ -28,5 +30,5 @@ else:
 
     # Construct NFA Graph
     graph = build_graph(tree.root)
-    g = graph.initial_state.draw_graph()
+    g = graph.initial_state.draw_graph(args.graph)
     g.view()
