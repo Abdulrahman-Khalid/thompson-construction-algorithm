@@ -31,7 +31,7 @@ class Tokenizer:
         return character == "|"
 
     def _is_single_operand_operation(self, character):
-        return character == "*" or character == "+"
+        return character in "*+" 
 
     def _is_left_parenthesis(self, character):
         return character == "("
@@ -47,6 +47,9 @@ class Tokenizer:
     
     def _is_range_symbol(self, character):
         return character == "-"
+
+    def _is_range(self, character):
+        return character == "="
 
     def _remove_spaces(self):
         self.regex_string = "".join( self.regex_string.split())
@@ -84,18 +87,21 @@ class Tokenizer:
         return True
 
     def _is_there_two_consuctive_operations(self):
+        if self._is_operation(self.regex_string[0]):
+            return True
         idx = 1
         while idx < len(self.regex_string):
             if self._is_single_operand_operation(self.regex_string[idx]):
                 if self._is_operation(self.regex_string[idx - 1]):
                     return True
             if self._is_two_operand_operation(self.regex_string[idx]):    
-                if self._is_two_operand_operation(self.regex_string[idx - 1]):
+                if self._is_two_operand_operation(self.regex_string[idx - 1]) or \
+                    self._is_left_parenthesis(self.regex_string[idx - 1]):
                     return True
             idx += 1
         return False
 
-    def _is_parenthesis_balanced(self):
+    def _are_parenthesis_balanced(self):
         # Check the paranthesis balance
         open_parenthesis = tuple('([')
         close_parenthesis = tuple(')]')
@@ -115,7 +121,7 @@ class Tokenizer:
         return not self._is_empty_string() and \
                 self._are_symbols_valid() and \
                 not self._is_there_two_consuctive_operations() and \
-                self._is_parenthesis_balanced
+                self._are_parenthesis_balanced()
 
     # Add & operator to indicate concatenation
     def _add_concatenation_tokens(self, tokens):
@@ -147,41 +153,65 @@ class Tokenizer:
                     tokens[idx - 1], tokens[idx] = tokens[idx], tokens[idx - 1]
         return tokens
 
-    def tokenize(self):
-        self._clean_regex_string()
-        valid_token = self._validate_regex_string()
-        if not valid_token:
-            return None, False
-
-        tokens = []
+    def extract_ranges(self):
+        ranges = []
         range_buffer = []
         in_range = False
-        for character in self.regex_string:
-            if not in_range:
-                if self._is_range_start(character):
+        idx = 0
+        while idx < len(self.regex_string):
+            if not in_range:  
+                if self._is_range_start(self.regex_string[idx]):
                     in_range = True
-                    range_buffer.append(character)
-                if self._is_literal(character):
-                    tokens.append(Token(TokenType.Literal, character))
-                elif self._is_two_operand_operation(character):
-                    tokens.append(Token(TokenType.TwoOperandOperation, character))
-                elif self._is_single_operand_operation(character):
-                    tokens.append(Token(TokenType.SingleOperandOperation, character))
-                elif self._is_left_parenthesis(character):
-                    tokens.append(Token(TokenType.LeftParenthesis, character))
-                elif self._is_right_parenthesis(character):
-                    tokens.append(Token(TokenType.RightParenthesis, character))
+                    range_buffer.append(self.regex_string[idx])
+                    self.regex_string =  self.regex_string[:idx] + self.regex_string[idx+1:]
+                    idx -= 1
             else:
-                if self._is_range_symbol(character) or self._is_literal(character):
-                    range_buffer.append(character)
-                elif self._is_range_end(character):
+                if self._is_range_symbol(self.regex_string[idx]) or self._is_literal(self.regex_string[idx]):
+                    range_buffer.append(self.regex_string[idx])
+                    self.regex_string =  self.regex_string[:idx] + self.regex_string[idx+1:]
+                    idx -= 1
+                elif self._is_range_end(self.regex_string[idx]):
+                    range_buffer.append(self.regex_string[idx])
+                    self.regex_string =  self.regex_string[:idx] + "=" + self.regex_string[idx+1:]
                     in_range = False
-                    range_buffer.append(character)
-                    tokens.append(Token(TokenType.Literal, ''.join(range_buffer)))
+                    ranges.append(''.join(range_buffer))                 
                     range_buffer.clear()
                 else:
                     return None, False
-    
+            idx += 1
+        return ranges, True
+
+
+
+    def tokenize(self):
+        self._clean_regex_string()
+        valid_tokens = self._validate_regex_string()
+
+        if not valid_tokens:
+            return None, False
+
+        ranges, valid_ranges = self.extract_ranges()
+        
+        if not valid_ranges:
+            return None, False
+        
+        tokens = []
+        for character in self.regex_string:
+            if self._is_literal(character):
+                tokens.append(Token(TokenType.Literal, character))
+            elif self._is_two_operand_operation(character):
+                tokens.append(Token(TokenType.TwoOperandOperation, character))
+            elif self._is_single_operand_operation(character):
+                tokens.append(Token(TokenType.SingleOperandOperation, character))
+            elif self._is_left_parenthesis(character):
+                tokens.append(Token(TokenType.LeftParenthesis, character))
+            elif self._is_right_parenthesis(character):
+                tokens.append(Token(TokenType.RightParenthesis, character))
+            elif self._is_range(character):
+                tokens.append(Token(TokenType.Literal, ranges.pop(0)))
+            else:
+                return None, False
+                
         tokens = self._add_concatenation_tokens(tokens)
         tokens = self._reorder_single_operand_tokens(tokens)
         return  tokens, True

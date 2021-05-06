@@ -12,6 +12,8 @@ parser.add_argument('--regex', type=str, required=True, default='',
                                 '\'A+\' Repetition (1 or more), ' \
                                 '() are supported for subregex expressions, ' \
                                 '[] are supported for range expressions, ' \
+                                'a-z, A-Z, 0-9 are all valid, '
+                                'no other symbols are valid, '
                                 'example: \'(ab)*|c+\'')
 parser.add_argument('--graph', type=str, required=False, default='graph', 
                                 help='graph filename')
@@ -30,5 +32,6 @@ else:
 
     # Construct NFA Graph
     graph = build_graph(tree.root)
-    g = graph.initial_state.draw_graph(args.graph)
+    graph.to_json(args.graph)
+    g = graph.draw_graph(args.graph)
     g.view()

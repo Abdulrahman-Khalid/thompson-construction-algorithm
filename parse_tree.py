@@ -12,14 +12,6 @@ class TreeNode:
         self.value = value
         self.type = node_type
 
-    def __str__(self, level=0):
-        ret = "\t" * level + repr(self) + "\n"
-        if self.left is not None:
-            ret += self.left.__str__(level + 1)
-        if self.right is not None:
-            ret += self.right.__str__(level + 1)
-        return ret
-
     def __repr__(self):
         if self.type == NodeType.Token:
             return str(self.value.value)
@@ -41,6 +33,18 @@ class TreeNode:
 class ParseTree:
     def __init__(self):
         self.root = TreeNode(None)
+    
+    @staticmethod
+    def _print_tree(node, level=0):
+        s = "\t" * level + repr(node) + "\n"
+        if node.left is not None:
+            s += ParseTree._print_tree(node.left, level + 1)
+        if node.right is not None:
+             s += ParseTree._print_tree(node.right, level + 1)
+        return s
+
+    def __str__(self):
+        return ParseTree._print_tree(self.root)
 
     def _find_empty_node(self, node, new_node):
         if node.left is None:
@@ -70,7 +74,7 @@ class ParseTree:
             self.root = new_node
             if new_node._is_and_operation() and \
                 new_node.left._is_not_and_operation() and \
-                new_node._is_not_single_operand_operation():
+                new_node.left._is_not_single_operand_operation():
                 self.root = self._right_rotate(new_node)
         else:
             self.root.value = value
@@ -108,6 +112,6 @@ class ParseTree:
                 if self.root.value is None:
                     self.root = self.root.left
                 return idx + 1
-                
+
         if self.root.value is None:
             self.root = self.root.left
