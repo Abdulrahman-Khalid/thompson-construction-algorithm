@@ -27,8 +27,7 @@ else:
     # Construct Parse tree
     tree = ParseTree()
     tree.build_tree(tokens)
-    print(tree.root)
-    
+
     # Construct NFA Graph
     graph = build_graph(tree.root)
     g = graph.initial_state.draw_graph(args.graph)
