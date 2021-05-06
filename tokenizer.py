@@ -19,74 +19,13 @@ class Token:
 class Tokenizer:
     def __init__(self, regex_string):
         self.regex_string = regex_string
-
-    def _clean_regex_string(self):
-        # Remove all spaces
-        self.regex_string = "".join( self.regex_string.split())
-
-        # Remove those patterns from regex string => (), []
-        idx = 1
-        while idx < len(self.regex_string):
-            if self._is_right_parenthesis(self.regex_string[idx]):
-                if self._is_left_parenthesis(self.regex_string[idx - 1]):
-                    l = list(self.regex_string)
-                    del(l[idx - 1:idx + 1])
-                    self.regex_string = "".join(l)
-                    idx -= 2
-            if self._is_range_end(self.regex_string[idx]):
-                if self._is_range_start(self.regex_string[idx - 1]):
-                    l = list(self.regex_string)
-                    del(l[idx - 1:idx + 1])
-                    self.regex_string = "".join(l)
-                    idx -= 2
-            idx += 1
-
-
-    def _validate_regex_string(self):
-        # Empty regex string
-        if not self.regex_string:
-            return False
-
-        # Check that all string characters are valid regex symbols
-        valid_symbols = "-[]()*+|"
-        for character in self.regex_string:
-            if not self._is_literal(character) and character not in valid_symbols:
-                return False
-
-        # Check that there aren't any two consuctive operations
-        idx = 1
-        single_opernad_operations = "+*"
-        two_opernad_operations = "|"
-        while idx < len(self.regex_string):
-            if self.regex_string[idx] in single_opernad_operations:
-                if self.regex_string[idx - 1] in single_opernad_operations or \
-                    self.regex_string[idx - 1] in two_opernad_operations:
-                    return False
-            if self.regex_string[idx] in two_opernad_operations:    
-                if self.regex_string[idx - 1] in two_opernad_operations:
-                    return False
-            idx += 1
-
-        # Check the paranthesis balance
-        open_parenthesis = tuple('([')
-        close_parenthesis = tuple(')]')
-        map = dict(zip(open_parenthesis, close_parenthesis))
-        queue = []
     
-        for character in self.regex_string:
-            if character in open_parenthesis:
-                queue.append(map[character])
-            elif character in close_parenthesis:
-                if not queue or character != queue.pop():
-                    return False
-        if queue:
-            return False
-        
-
-        return True
-
     def _is_literal(self, character):
         return character.isalpha() or character.isdigit()
+
+    def _is_operation(self, character):
+        return self._is_two_operand_operation(character) or \
+            self._is_single_operand_operation(character)
 
     def _is_two_operand_operation(self, character):
         return character == "|"
@@ -108,6 +47,75 @@ class Tokenizer:
     
     def _is_range_symbol(self, character):
         return character == "-"
+
+    def _remove_spaces(self):
+        self.regex_string = "".join( self.regex_string.split())
+
+    def _remove_unnecessary_parenthesis(self):
+        idx = 1
+        while idx < len(self.regex_string):
+            if self._is_right_parenthesis(self.regex_string[idx]):
+                if self._is_left_parenthesis(self.regex_string[idx - 1]):
+                    l = list(self.regex_string)
+                    del(l[idx - 1:idx + 1])
+                    self.regex_string = "".join(l)
+                    idx -= 2
+            if self._is_range_end(self.regex_string[idx]):
+                if self._is_range_start(self.regex_string[idx - 1]):
+                    l = list(self.regex_string)
+                    del(l[idx - 1:idx + 1])
+                    self.regex_string = "".join(l)
+                    idx -= 2
+            idx += 1
+        
+    def _clean_regex_string(self):
+        self._remove_spaces()
+        self._remove_unnecessary_parenthesis()
+
+    def _is_empty_string(self):
+        return not self.regex_string
+
+    def _are_symbols_valid(self):
+        # Check that all string characters are valid regex symbols
+        valid_symbols = "-[]()*+|"
+        for character in self.regex_string:
+            if not self._is_literal(character) and character not in valid_symbols:
+                return False
+        return True
+
+    def _is_there_two_consuctive_operations(self):
+        idx = 1
+        while idx < len(self.regex_string):
+            if self._is_single_operand_operation(self.regex_string[idx]):
+                if self._is_operation(self.regex_string[idx - 1]):
+                    return True
+            if self._is_two_operand_operation(self.regex_string[idx]):    
+                if self._is_two_operand_operation(self.regex_string[idx - 1]):
+                    return True
+            idx += 1
+        return False
+
+    def _is_parenthesis_balanced(self):
+        # Check the paranthesis balance
+        open_parenthesis = tuple('([')
+        close_parenthesis = tuple(')]')
+        map = dict(zip(open_parenthesis, close_parenthesis))
+        queue = []
+        for character in self.regex_string:
+            if character in open_parenthesis:
+                queue.append(map[character])
+            elif character in close_parenthesis:
+                if not queue or character != queue.pop():
+                    return False
+        if queue:
+            return False
+        return True
+
+    def _validate_regex_string(self):
+        return not self._is_empty_string() and \
+                self._are_symbols_valid() and \
+                not self._is_there_two_consuctive_operations() and \
+                self._is_parenthesis_balanced
 
     # Add & operator to indicate concatenation
     def _add_concatenation_tokens(self, tokens):

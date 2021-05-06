@@ -74,70 +74,65 @@ class State:
 
 class Graph:
     last_state_value = 0
+    
     def __init__(self):
         self.initial_state = None
         self.last_state = None
+    
+    def create_state(self):
+        state = State(Graph.last_state_value)
+        Graph.last_state_value += 1
+        return state
 
 def create_literal_graph(literal):
     literal_graph = Graph()
-    literal_graph.initial_state = State(Graph.last_state_value)
-    Graph.last_state_value += 1
-    literal_graph.last_state = State(Graph.last_state_value)
-    Graph.last_state_value += 1
+    literal_graph.initial_state = literal_graph.create_state()
+    literal_graph.last_state = literal_graph.create_state()
     
     literal_graph.initial_state.add_output_edge(literal, literal_graph.last_state)
+    
     return literal_graph
 
 def create_and_graph(fisrst_graph, second_graph):
     fisrst_graph.last_state.add_output_edge("\u03B5", second_graph.initial_state)
     fisrst_graph.last_state = second_graph.last_state
+    
     return fisrst_graph
 
 def create_or_graph(fisrst_graph, second_graph):
     or_graph = Graph()
-    or_graph.initial_state = State(Graph.last_state_value)
-    Graph.last_state_value += 1
-    or_graph.last_state = State(Graph.last_state_value)
-    Graph.last_state_value += 1
+    or_graph.initial_state = or_graph.create_state()
+    or_graph.last_state = or_graph.create_state()
 
     or_graph.initial_state.add_output_edge("\u03B5", fisrst_graph.initial_state)
     or_graph.initial_state.add_output_edge("\u03B5", second_graph.initial_state)
-
     fisrst_graph.last_state.add_output_edge("\u03B5", or_graph.last_state)
     second_graph.last_state.add_output_edge("\u03B5", or_graph.last_state)
+    
     return or_graph
 
 def create_asterisk_graph(initial_graph):
     asterisk_graph = Graph()
-    asterisk_graph.initial_state = State(Graph.last_state_value)
-    Graph.last_state_value += 1
-    asterisk_graph.last_state = State(Graph.last_state_value)
-    Graph.last_state_value += 1
+    asterisk_graph.initial_state = asterisk_graph.create_state()
+    asterisk_graph.last_state = asterisk_graph.create_state()
 
     asterisk_graph.initial_state.add_output_edge("\u03B5", initial_graph.initial_state)
-
     asterisk_graph.initial_state.add_output_edge("\u03B5", asterisk_graph.last_state)
-
     initial_graph.last_state.add_output_edge("\u03B5", asterisk_graph.last_state)
-    
     initial_graph.last_state.add_output_edge("\u03B5", asterisk_graph.initial_state)
 
     return asterisk_graph
 
 def create_plus_graph(initial_graph):
-    asterisk_graph = Graph()
-    asterisk_graph.initial_state = State(Graph.last_state_value)
-    Graph.last_state_value += 1
-    asterisk_graph.last_state = State(Graph.last_state_value)
-    Graph.last_state_value += 1
+    plus_graph = Graph()
+    plus_graph.initial_state = plus_graph.create_state()
+    plus_graph.last_state = plus_graph.create_state()
 
-    asterisk_graph.initial_state.add_output_edge("\u03B5", initial_graph.initial_state)
- 
-    initial_graph.last_state.add_output_edge("\u03B5", asterisk_graph.last_state)
-    
-    initial_graph.last_state.add_output_edge("\u03B5", asterisk_graph.initial_state)
+    plus_graph.initial_state.add_output_edge("\u03B5", initial_graph.initial_state)
+    initial_graph.last_state.add_output_edge("\u03B5", plus_graph.last_state)
+    initial_graph.last_state.add_output_edge("\u03B5", plus_graph.initial_state)
 
-    return asterisk_graph
+    return plus_graph
 
 
 def build_graph(parse_tree):

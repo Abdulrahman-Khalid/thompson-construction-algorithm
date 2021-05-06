@@ -1,7 +1,6 @@
 from enum import Enum, auto
 from tokenizer import TokenType
 
-
 class NodeType(Enum):
     Token = auto()
     Subtree = auto()
@@ -27,6 +26,17 @@ class TreeNode:
         elif self.type == NodeType.Subtree:
             return "SubTree"
 
+    def _is_single_operand_operation(self):
+        return self.type == NodeType.Token and self.value.type == TokenType.SingleOperandOperation
+    
+    def _is_not_single_operand_operation(self):
+        return self.type == NodeType.Token and self.value.type != TokenType.SingleOperandOperation
+
+    def _is_and_operation(self):
+        return self.type == NodeType.Token and self.value.value == "&"
+    
+    def _is_not_and_operation(self):
+        return self.type == NodeType.Token and self.value.value != "&"
 
 class ParseTree:
     def __init__(self):
@@ -35,19 +45,13 @@ class ParseTree:
     def _find_empty_node(self, node, new_node):
         if node.left is None:
             node.left = new_node
-        elif node.right is None and \
-        (node.type == NodeType.Token and node.value.type != TokenType.SingleOperandOperation):
+        elif node.right is None and node._is_not_single_operand_operation():
             node.right = new_node
-        elif node.right is None and \
-        (node.type == NodeType.Token and node.value.type == TokenType.SingleOperandOperation):
+        elif node.right is None and node._is_single_operand_operation():
             self._find_empty_node(node.left, new_node)
         else:
             self._find_empty_node(node.right, new_node)
-
-    def _insert_literal(self, value):
-        new_node = TreeNode(value)
-        self._find_empty_node(self.root, new_node)
-
+    
     def _right_rotate(self, node):
         left_node = node.left
         right_node = left_node.right
@@ -55,15 +59,18 @@ class ParseTree:
         node.left = right_node
         return left_node
 
+    def _insert_literal(self, value):
+        new_node = TreeNode(value)
+        self._find_empty_node(self.root, new_node)
+
     def _insert_two_operand_operator(self, value):
         if self.root.value is not None:
             new_node = TreeNode(value)
             new_node.left = self.root
             self.root = new_node
-            if value.value == '&' and \
-            new_node.left.value.value != '&' and \
-            (new_node.left.type == NodeType.Token and \
-            new_node.left.value.type != TokenType.SingleOperandOperation):
+            if new_node._is_and_operation() and \
+                new_node.left._is_not_and_operation() and \
+                new_node._is_not_single_operand_operation():
                 self.root = self._right_rotate(new_node)
         else:
             self.root.value = value
@@ -75,7 +82,8 @@ class ParseTree:
 
     def _insert_single_operand_operator(self, value):
         if self.root.value is not None:
-            self._insert_literal(value)
+            new_node = TreeNode(value)
+            self._find_empty_node(self.root, new_node)
         else:
             self.root.value = value
 
@@ -100,5 +108,6 @@ class ParseTree:
                 if self.root.value is None:
                     self.root = self.root.left
                 return idx + 1
+                
         if self.root.value is None:
             self.root = self.root.left
