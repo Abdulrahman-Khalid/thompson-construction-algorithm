@@ -123,12 +123,15 @@ class Tokenizer:
             idx += 1
         return tokens
 
-    # Reorder signel operand operations to be as follows: *a instead of a*
+    # Reorder single operand operations to be as follows: *a instead of a*
     def _reorder_single_operand_tokens(self, tokens):
         last_left_parenthesis_idx = -1
+        queue = []
         for idx in range(len(tokens)):
             if tokens[idx].type == TokenType.LeftParenthesis:
-                last_left_parenthesis_idx = idx
+                queue.append(idx)
+            elif tokens[idx].type == TokenType.RightParenthesis:
+                last_left_parenthesis_idx = queue.pop()
             elif tokens[idx].type == TokenType.SingleOperandOperation:
                 if tokens[idx - 1].type == TokenType.RightParenthesis:
                     single_operand_token = tokens.pop(idx)
