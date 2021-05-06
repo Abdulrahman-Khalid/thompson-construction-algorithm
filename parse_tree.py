@@ -102,7 +102,3 @@ class ParseTree:
                 return idx + 1
         if self.root.value is None:
             self.root = self.root.left
-  
-
-
-

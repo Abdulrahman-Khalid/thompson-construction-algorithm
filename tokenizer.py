@@ -16,7 +16,6 @@ class Token:
     def __str__(self):
         return "Type: " + str(self.type) + " Value: " + self.value
 
-    
 class Tokenizer:
     def __init__(self, regex_string):
         self.regex_string = regex_string
