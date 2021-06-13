@@ -19,11 +19,12 @@ $ python main.py --regex 'regex_expression' --graph filename
   <img src="graphs/graph.png" alt="Output Graph"/>
 </p>
 
+# Developers 
 <center>
   
-| Name                                |    Section      |    BN      |              Email               |
-| ----------------------------------- | :-------------: | :--------: | :------------------------------: |
-| Ahmad Mahmoud AbdElMen'em           |       1         |    5       | ahmed.afifi.cufe@gmail.com       |
-| Abdulrahman Khalid Hassan           |       1         |    30      | abdulrahman.elshafei98@gmail.com|
+| Name                                |              Email               |
+| ----------------------------------- | :------------------------------: |
+| Ahmad Mahmoud AbdElMen'em           | ahmed.afifi.cufe@gmail.com       |
+| Abdulrahman Khalid Hassan           | abdulrahman.elshafei98@gmail.com |
 
 </center>
